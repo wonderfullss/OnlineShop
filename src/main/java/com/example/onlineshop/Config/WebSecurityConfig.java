@@ -21,6 +21,7 @@ public class WebSecurityConfig {
                 .csrf().disable().headers().frameOptions().disable()
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.PUT, "/admin/balance").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/shop/signup").permitAll()
                 .requestMatchers(HttpMethod.POST, "/shop/signin").permitAll()
                 .requestMatchers("/actuator/shutdown").permitAll()
