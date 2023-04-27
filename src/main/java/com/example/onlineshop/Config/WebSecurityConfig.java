@@ -23,6 +23,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/shop/signup").permitAll()
                 .requestMatchers(HttpMethod.POST, "/shop/signin").permitAll()
+                .requestMatchers(HttpMethod.GET, "/user/myNotifications").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT, "/admin/alert").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/admin/balance").hasAuthority("ADMIN")
                 .requestMatchers("/actuator/shutdown").permitAll()
                 .and()
