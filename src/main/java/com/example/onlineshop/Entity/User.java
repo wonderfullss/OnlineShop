@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @NotBlank
@@ -41,8 +41,8 @@ public class User implements UserDetails {
     @Min(0)
     private Double balance;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> alert;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Notification> notification;
 
     @Enumerated(EnumType.STRING)
     private Role role;
