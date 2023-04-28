@@ -1,5 +1,6 @@
 package com.example.onlineshop.Entity;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -43,6 +44,12 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Notification> notification;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Product> history;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Organization> organizations;
 
     @Enumerated(EnumType.STRING)
     private Role role;
