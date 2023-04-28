@@ -1,5 +1,6 @@
 package com.example.onlineshop.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -27,21 +28,14 @@ public class Product {
     @NotBlank
     private String description;
 
-    @NotBlank
-    private String organization;
-
     @Min(1)
-    private Integer price;
+    private Double price;
 
-    @NotBlank
     @Column(name = "quantity_in_stock")
-    private String quantityInStock;
+    private Integer quantityInStock;
 
     @NotBlank
     private String discount;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<String> reviews;
 
     @ElementCollection(fetch = FetchType.EAGER)
     List<String> keyword;
@@ -51,4 +45,17 @@ public class Product {
     Map<String, String> characteristicTable;
 
     private Double grade;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private List<Review> reviews;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
