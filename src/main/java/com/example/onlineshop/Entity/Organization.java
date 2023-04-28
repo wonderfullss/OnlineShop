@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -20,4 +22,13 @@ public class Organization {
 
     @NotBlank
     private String name;
+
+    private String description;
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.EAGER)
+    private List<Product> product;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
