@@ -46,10 +46,10 @@ public class User implements UserDetails {
     private List<Notification> notification;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Product> history;
+    private List<Organization> organizations;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Organization> organizations;
+    private List<HistoryOrders> historyOrders;
 
     @Enumerated(EnumType.STRING)
     private Role role;

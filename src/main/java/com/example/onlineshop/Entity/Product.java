@@ -46,16 +46,16 @@ public class Product {
 
     private Double grade;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<Review> reviews;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private List<HistoryOrders> historyOrders;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organization_id")
     private Organization organization;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
 }

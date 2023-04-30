@@ -25,6 +25,8 @@ public class Organization {
 
     private String description;
 
+    private double balance;
+
     @OneToMany(mappedBy = "organization", fetch = FetchType.EAGER)
     private List<Product> product;
 
