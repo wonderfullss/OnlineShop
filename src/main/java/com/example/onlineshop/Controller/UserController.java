@@ -6,16 +6,28 @@ import com.example.onlineshop.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    @PutMapping(value = "/user/buy")
+    public ResponseEntity<?> buyProductByUser(@RequestParam Long id) {
+        return userService.buyProduct(id);
+    }
+
+    @PutMapping(value = "/user/return/product")
+    public ResponseEntity<?> returnProduct(@RequestParam Long id) {
+        return userService.returnProduct(id);
+    }
+
+    @GetMapping(value = "/my/history")
+    public ResponseEntity<?> getHistory() {
+        return userService.getHistory();
+    }
 
     @GetMapping(value = "/user/myNotifications")
     public ResponseEntity<?> getAllNotifications() {
