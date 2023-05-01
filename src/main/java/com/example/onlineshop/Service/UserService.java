@@ -42,7 +42,7 @@ public class UserService {
             return new ResponseEntity<>(Map.of("message", "Возврат запрещен"), HttpStatus.OK);
         }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        user.setBalance(user.getBalance() + historyOrders.getProduct().getPrice());
+        user.setBalance(user.getBalance() + historyOrders.getPurchaseAmount());
         Product product = historyOrders.getProduct();
         product.setQuantityInStock(product.getQuantityInStock() + 1);
         Organization organization = organizationRepository.findOrganizationById(product.getOrganization().getId());
@@ -64,12 +64,13 @@ public class UserService {
         product.setQuantityInStock(product.getQuantityInStock() - 1);
         user.setBalance(user.getBalance() - product.getPrice());
         Organization organization = organizationRepository.findOrganizationById(product.getOrganization().getId());
-        organization.setBalance(organization.getBalance() + product.getPrice());
+        organization.setBalance(organization.getBalance() + (product.getPrice() * 0.13));
         organizationRepository.save(organization);
         userRepository.save(user);
         productRepository.save(product);
         HistoryOrders historyOrders = new HistoryOrders();
         historyOrders.setUser(user);
+        historyOrders.setPurchaseAmount(product.getPrice());
         historyOrders.setProduct(product);
         historyOrdersRepository.save(historyOrders);
         return new ResponseEntity<>(Map.of("message", "Поздравляем с покупкой!"), HttpStatus.OK);

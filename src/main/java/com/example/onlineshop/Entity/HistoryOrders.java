@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,6 +25,8 @@ public class HistoryOrders {
     private Product product;
 
     private LocalDateTime date = LocalDateTime.now();
+
+    private Double purchaseAmount;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
