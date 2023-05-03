@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Min(0)
     private Double balance;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+    private Review review;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Notification> notification;
 

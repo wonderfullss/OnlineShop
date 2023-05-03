@@ -20,7 +20,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank
     private String name;
@@ -38,11 +38,11 @@ public class Product {
     private String discount;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    List<String> keyword;
+    private List<String> keyword;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "characteristic_table")
-    Map<String, String> characteristicTable;
+    private Map<String, String> characteristicTable;
 
     private Double grade;
 

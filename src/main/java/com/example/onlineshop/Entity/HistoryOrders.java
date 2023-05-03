@@ -19,7 +19,6 @@ public class HistoryOrders {
     @JsonIgnore
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;

@@ -3,7 +3,6 @@ package com.example.onlineshop.Service;
 import com.example.onlineshop.Entity.Role;
 import com.example.onlineshop.Entity.User;
 import com.example.onlineshop.Repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
