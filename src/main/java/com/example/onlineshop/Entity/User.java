@@ -1,6 +1,7 @@
 package com.example.onlineshop.Entity;
 
-import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -35,25 +36,30 @@ public class User implements UserDetails {
     @NotBlank
     private String email;
 
-
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank
     private String password;
 
     @Min(0)
     private Double balance;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
     private Review review;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Notification> notification;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Organization> organizations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<HistoryOrders> historyOrders;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -66,26 +72,31 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
