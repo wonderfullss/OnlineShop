@@ -44,31 +44,35 @@ public class User implements UserDetails {
     private Double balance;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
-    private Review review;
+    private Boolean accountNonLocked;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Review> review;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Notification> notification;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Organization> organizations;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<HistoryOrders> historyOrders;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String username, String email, String password, Double balance, Role role) {
+    public User(String username, String email, String password, Double balance, Role role, Boolean accountNonLocked) {
         this.username = username;
         this.email = email;
         this.balance = balance;
         this.role = role;
         this.password = password;
+        this.accountNonLocked = accountNonLocked;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return true;
+        return accountNonLocked;
     }
 
     @Override
