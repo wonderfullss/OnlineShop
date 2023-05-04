@@ -12,6 +12,20 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @PutMapping(value = "/admin/access/{username}")
+    public ResponseEntity<?> userAccess(@PathVariable String username, @RequestParam String operation) {
+        return adminService.userAccess(username, operation);
+    }
+
+    @DeleteMapping(value = "/admin/delete/organization/{id}")
+    public ResponseEntity<?> deleteOrganization(@PathVariable Long id){
+        return adminService.deleteOrganization(id);
+    }
+    @DeleteMapping(value = "/admin/delete/user/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+        return adminService.deleteUser(username);
+    }
+
     @GetMapping(value = "/admin/orderList/{id}")
     public ResponseEntity<?> getUserOrderList(@PathVariable Long id) {
         return adminService.getOrderList(id);

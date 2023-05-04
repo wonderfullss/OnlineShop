@@ -18,8 +18,8 @@ public class Register implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User user = new User("admin", "admin@mail.ru", "admin", 0.0, Role.ADMIN);
-        if(userRepository.findUserByUsername("admin") != null)
+        User user = new User("admin", "admin@mail.ru", "admin", 0.0, Role.ADMIN, true);
+        if (userRepository.findUserByUsername("admin") != null)
             return;
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);

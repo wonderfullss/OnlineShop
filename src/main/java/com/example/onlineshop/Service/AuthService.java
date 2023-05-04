@@ -42,6 +42,7 @@ public class AuthService implements UserDetailsService {
         if (userRepository.findUserByEmail(user.getEmail()) != null)
             return new ResponseEntity<>(Map.of("message", "Пользователь с такой почтой уже зарегестрирован!"), HttpStatus.CONFLICT);
         user.setRole(Role.USER);
+        user.setAccountNonLocked(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setBalance(0.0);
         userRepository.save(user);
