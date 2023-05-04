@@ -40,7 +40,7 @@ public class UserService {
         if (historyOrders == null)
             return new ResponseEntity<>(Map.of("message", "Отзыв можно оставить только после покупки."), HttpStatus.CONFLICT);
         Product product = historyOrders.getProduct();
-        if (reviewRepository.findReviewByUserId(user.getId()) != null)
+        if (!reviewRepository.findReviewByUserIdAndProductId(user.getId(), product.getId()).isEmpty())
             return new ResponseEntity<>(Map.of("message", "Вы уже оставляли отзыв на этот товар."), HttpStatus.CONFLICT);
         product.getReviews().add(review);
         product.setGrade(gradeLogic(product.getReviews()));
@@ -73,6 +73,8 @@ public class UserService {
         Product product = productRepository.findProductById(id);
         if (product == null)
             return new ResponseEntity<>(Map.of("message", "Такого товара нет!"), HttpStatus.NOT_FOUND);
+        if (product.getOrganization() == null)
+            return new ResponseEntity<>(Map.of("message", "Организация заблокирована."), HttpStatus.NO_CONTENT);
         if (product.getQuantityInStock().equals(0))
             return new ResponseEntity<>(Map.of("message", "Товара нет в наличии!"), HttpStatus.NO_CONTENT);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -106,6 +108,8 @@ public class UserService {
     }
 
     public ResponseEntity<?> registerOrganization(Organization organization) {
+        if (organizationRepository.findByName(organization.getName()) != null)
+            return new ResponseEntity<>(Map.of("message", "Организация с такими названием зарегистрирована"), HttpStatus.CONFLICT);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organization.setUser(user);
         organizationRepository.save(organization);
