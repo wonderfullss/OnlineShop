@@ -25,6 +25,7 @@ public class HistoryOrders {
 
     private LocalDateTime date = LocalDateTime.now();
 
+    @JsonIgnore
     private Double purchaseAmount;
 
     @JsonIgnore
