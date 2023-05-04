@@ -1,8 +1,10 @@
 package com.example.onlineshop.Controller;
 
 import com.example.onlineshop.Entity.Organization;
+import com.example.onlineshop.Entity.Review;
 import com.example.onlineshop.Entity.User;
 import com.example.onlineshop.Service.UserService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @PutMapping(value = "/product/review")
+    public ResponseEntity<?> addReview(@RequestBody Review review, @RequestParam Long id) {
+        return userService.addReview(review, id);
+    }
 
     @PutMapping(value = "/user/buy")
     public ResponseEntity<?> buyProductByUser(@RequestParam Long id) {

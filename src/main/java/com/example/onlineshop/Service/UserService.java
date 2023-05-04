@@ -1,9 +1,6 @@
 package com.example.onlineshop.Service;
 
-import com.example.onlineshop.Entity.HistoryOrders;
-import com.example.onlineshop.Entity.Organization;
-import com.example.onlineshop.Entity.Product;
-import com.example.onlineshop.Entity.User;
+import com.example.onlineshop.Entity.*;
 import com.example.onlineshop.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,16 +27,35 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final ReviewRepository reviewRepository;
+
     public ResponseEntity<?> getHistory() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(historyOrdersRepository.findAllByUserId(user.getId()), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> addReview(Review review, Long id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        HistoryOrders historyOrders = historyOrdersRepository.findHistoryOrdersById(id);
+        if (historyOrders == null)
+            return new ResponseEntity<>(Map.of("message", "Отзыв можно оставить только после покупки."), HttpStatus.CONFLICT);
+        Product product = historyOrders.getProduct();
+        if (reviewRepository.findReviewByUserId(user.getId()) != null)
+            return new ResponseEntity<>(Map.of("message", "Вы уже оставляли отзыв на этот товар."), HttpStatus.CONFLICT);
+        product.getReviews().add(review);
+        product.setGrade(gradeLogic(product.getReviews()));
+        review.setUser(user);
+        review.setProduct(product);
+        reviewRepository.save(review);
+        productRepository.save(product);
+        return new ResponseEntity<>(Map.of("message", "Отзыв оставлен!"), HttpStatus.OK);
     }
 
     public ResponseEntity<?> returnProduct(Long id) {
         HistoryOrders historyOrders = historyOrdersRepository.findHistoryOrdersById(id);
         if (historyOrders == null)
             return new ResponseEntity<>(Map.of("message", "Товара нет"), HttpStatus.CONFLICT);
-        if (Duration.between(LocalDateTime.now(), historyOrders.getDate()).toHours() > 1) {
+        if (Duration.between(LocalDateTime.now(), historyOrders.getDate()).toDays() > 1) {
             return new ResponseEntity<>(Map.of("message", "Возврат запрещен"), HttpStatus.OK);
         }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -74,6 +91,14 @@ public class UserService {
         historyOrders.setProduct(product);
         historyOrdersRepository.save(historyOrders);
         return new ResponseEntity<>(Map.of("message", "Поздравляем с покупкой!"), HttpStatus.OK);
+    }
+
+    private Double gradeLogic(List<Review> list) {
+        double grade = 0;
+        for (Review review : list) {
+            grade += review.getGrade();
+        }
+        return grade / list.size();
     }
 
     public ResponseEntity<?> allNotificationsForUser(Long id) {
