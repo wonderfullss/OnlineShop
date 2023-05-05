@@ -12,15 +12,26 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @PutMapping(value = "/admin/access/{username}")
+    @PostMapping(value = "/admin/validate/organization/{name}")
+    public ResponseEntity<?> validateOrganization(@PathVariable String name, @RequestParam String action) {
+        return adminService.validateOrganization(name, action);
+    }
+
+    @PutMapping(value = "/admin/access/organization{name}")
+    public ResponseEntity<?> organizationAccess(@PathVariable String name, @RequestParam String operation) {
+        return adminService.organizationAccess(name, operation);
+    }
+
+    @PutMapping(value = "/admin/access/user/{username}")
     public ResponseEntity<?> userAccess(@PathVariable String username, @RequestParam String operation) {
         return adminService.userAccess(username, operation);
     }
 
     @DeleteMapping(value = "/admin/delete/organization/{id}")
-    public ResponseEntity<?> deleteOrganization(@PathVariable Long id){
+    public ResponseEntity<?> deleteOrganization(@PathVariable Long id) {
         return adminService.deleteOrganization(id);
     }
+
     @DeleteMapping(value = "/admin/delete/user/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
         return adminService.deleteUser(username);

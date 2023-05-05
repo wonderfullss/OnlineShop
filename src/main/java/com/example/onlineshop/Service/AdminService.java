@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,25 @@ public class AdminService {
     private final OrganizationRepository organizationRepository;
 
     private final ProductRepository productRepository;
+
+    private final OrganizationConsiderationRepository organizationConsiderationRepository;
+
+    public ResponseEntity<?> organizationAccess(String name, String operation) {
+        Organization organization = organizationRepository.findByName(name);
+        if (organization == null)
+            return new ResponseEntity<>(Map.of("message", "Организация не найдена"), HttpStatus.NOT_FOUND);
+        if (operation.equals("LOCK")) {
+            organization.setFrozen(true);
+            organizationRepository.save(organization);
+            return new ResponseEntity<>(Map.of("message", "Организация заморожена"), HttpStatus.OK);
+        }
+        if (operation.equals("UNLOCK")) {
+            organization.setFrozen(false);
+            organizationRepository.save(organization);
+            return new ResponseEntity<>(Map.of("message", "Организация разморожена"), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(Map.of("message", "Операция не найдена"), HttpStatus.BAD_REQUEST);
+    }
 
     public ResponseEntity<?> userAccess(String username, String operation) {
         User user = userRepository.findUserByUsername(username);
@@ -47,9 +67,48 @@ public class AdminService {
         for (Product product : list) {
             product.setOrganization(null);
         }
-        productRepository.saveAll(list);
         organizationRepository.deleteById(id);
         return new ResponseEntity<>(Map.of("message", "Организация удалена."), HttpStatus.NO_CONTENT);
+    }
+
+    @Transactional
+    public ResponseEntity<?> validateOrganization(String name, String action) {
+        OrganizationConsideration organizationConsideration = organizationConsiderationRepository.findByName(name);
+        if (organizationConsideration == null)
+            return new ResponseEntity<>(Map.of("message", "Такой организации нет"), HttpStatus.NOT_FOUND);
+        if (action.equals("APPROVED")) {
+            return approvedRegistration(organizationConsideration);
+        } else {
+            return forbiddenRegistration(organizationConsideration);
+        }
+    }
+
+    private ResponseEntity<?> forbiddenRegistration(OrganizationConsideration organizationConsideration) {
+        Notification notification = new Notification();
+        notification.setUser(organizationConsideration.getUser());
+        notification.setTime(LocalDateTime.now());
+        notification.setHeader(organizationConsideration.getUser().getUsername());
+        notification.setAlert("Организация не одобрена");
+        notificationRepository.save(notification);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> approvedRegistration(OrganizationConsideration organizationConsideration) {
+        Organization organization = new Organization();
+        organization.setFrozen(false);
+        organization.setUser(organizationConsideration.getUser());
+        organization.setName(organizationConsideration.getName());
+        organization.setBalance(organizationConsideration.getBalance());
+        organization.setDescription(organizationConsideration.getDescription());
+        Notification notification = new Notification();
+        notification.setUser(organizationConsideration.getUser());
+        notification.setTime(LocalDateTime.now());
+        notification.setHeader(organizationConsideration.getUser().getUsername());
+        notification.setAlert("Организация зарегистрирована");
+        organizationConsiderationRepository.delete(organizationConsideration);
+        notificationRepository.save(notification);
+        organizationRepository.save(organization);
+        return new ResponseEntity<>(Map.of("message", "Организация успешно зарегистрирована!"), HttpStatus.OK);
     }
 
     @Transactional
