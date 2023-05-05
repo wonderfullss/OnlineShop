@@ -20,8 +20,8 @@ public class HistoryOrders {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "purchaseProduct_id")
+    private PurchaseProduct purchaseProduct;
 
     private LocalDateTime date = LocalDateTime.now();
 

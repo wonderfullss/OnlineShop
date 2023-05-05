@@ -29,6 +29,8 @@ public class Organization {
 
     private double balance;
 
+    private boolean isFrozen;
+
     @OneToMany(mappedBy = "organization", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Product> product;
