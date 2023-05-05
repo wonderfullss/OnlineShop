@@ -72,6 +72,41 @@ public class AdminService {
     }
 
     @Transactional
+    public ResponseEntity<?> validateProduct(Long id, String action) {
+        Product product = productRepository.findProductById(id);
+        if (product == null)
+            return new ResponseEntity<>(Map.of("message", "Такого товара нет"), HttpStatus.NOT_FOUND);
+        if (action.equals("APPROVED")) {
+            return approvedProduct(product);
+        } else {
+            return forbiddenProduct(product);
+        }
+    }
+
+    private ResponseEntity<?> approvedProduct(Product product) {
+        product.setFrozen(false);
+        product.setGrade(0.0);
+        Notification notification = new Notification();
+        notification.setUser(product.getOrganization().getUser());
+        notification.setTime(LocalDateTime.now());
+        notification.setHeader(product.getOrganization().getUser().getUsername());
+        notification.setAlert("Товар допущен к продаже");
+        notificationRepository.save(notification);
+        productRepository.save(product);
+        return new ResponseEntity<>(Map.of("message", "Товар одобрен"), HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> forbiddenProduct(Product product) {
+        Notification notification = new Notification();
+        notification.setUser(product.getOrganization().getUser());
+        notification.setTime(LocalDateTime.now());
+        notification.setHeader(product.getOrganization().getUser().getUsername());
+        notification.setAlert("Товар допущен к продаже");
+        notificationRepository.save(notification);
+        return new ResponseEntity<>(Map.of("message", "Товар не одобрен"), HttpStatus.OK);
+    }
+
+    @Transactional
     public ResponseEntity<?> validateOrganization(String name, String action) {
         OrganizationConsideration organizationConsideration = organizationConsiderationRepository.findByName(name);
         if (organizationConsideration == null)

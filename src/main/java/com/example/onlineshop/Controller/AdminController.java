@@ -17,6 +17,11 @@ public class AdminController {
         return adminService.validateOrganization(name, action);
     }
 
+    @PutMapping("/admin/validate/product/{id}")
+    public ResponseEntity<?> validateProduct(@PathVariable Long id, @RequestParam String action) {
+        return adminService.validateProduct(id, action);
+    }
+
     @PutMapping(value = "/admin/access/organization{name}")
     public ResponseEntity<?> organizationAccess(@PathVariable String name, @RequestParam String operation) {
         return adminService.organizationAccess(name, operation);
