@@ -25,9 +25,13 @@ public class UserService {
 
     private final ProductRepository productRepository;
 
+    private final OrganizationConsiderationRepository organizationConsiderationRepository;
+
     private final UserRepository userRepository;
 
     private final ReviewRepository reviewRepository;
+
+    private final PurchaseProductRepository purchaseProductRepository;
 
     public ResponseEntity<?> getHistory() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -39,7 +43,7 @@ public class UserService {
         HistoryOrders historyOrders = historyOrdersRepository.findHistoryOrdersById(id);
         if (historyOrders == null)
             return new ResponseEntity<>(Map.of("message", "Отзыв можно оставить только после покупки."), HttpStatus.CONFLICT);
-        Product product = historyOrders.getProduct();
+        Product product = productRepository.findProductById(historyOrders.getPurchaseProduct().getProductId());
         if (!reviewRepository.findReviewByUserIdAndProductId(user.getId(), product.getId()).isEmpty())
             return new ResponseEntity<>(Map.of("message", "Вы уже оставляли отзыв на этот товар."), HttpStatus.CONFLICT);
         product.getReviews().add(review);
@@ -58,10 +62,10 @@ public class UserService {
         if (Duration.between(LocalDateTime.now(), historyOrders.getDate()).toDays() > 1) {
             return new ResponseEntity<>(Map.of("message", "Возврат запрещен"), HttpStatus.OK);
         }
+        Product product = productRepository.findProductById(historyOrders.getPurchaseProduct().getProductId());
+        product.setQuantityInStock(product.getQuantityInStock() + 1);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         user.setBalance(user.getBalance() + historyOrders.getPurchaseAmount());
-        Product product = historyOrders.getProduct();
-        product.setQuantityInStock(product.getQuantityInStock() + 1);
         Organization organization = organizationRepository.findOrganizationById(product.getOrganization().getId());
         organization.setBalance(organization.getBalance() - product.getPrice());
         userRepository.save(user);
@@ -74,7 +78,9 @@ public class UserService {
         if (product == null)
             return new ResponseEntity<>(Map.of("message", "Такого товара нет!"), HttpStatus.NOT_FOUND);
         if (product.getOrganization() == null)
-            return new ResponseEntity<>(Map.of("message", "Организация заблокирована."), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(Map.of("message", "Организация удалена"), HttpStatus.NOT_FOUND);
+        if (product.getOrganization().isFrozen())
+            return new ResponseEntity<>(Map.of("message", "Организация заморожена."), HttpStatus.NO_CONTENT);
         if (product.getQuantityInStock().equals(0))
             return new ResponseEntity<>(Map.of("message", "Товара нет в наличии!"), HttpStatus.NO_CONTENT);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -84,13 +90,15 @@ public class UserService {
         user.setBalance(user.getBalance() - product.getPrice());
         Organization organization = organizationRepository.findOrganizationById(product.getOrganization().getId());
         organization.setBalance(organization.getBalance() + (product.getPrice() * 0.13));
+        PurchaseProduct purchaseProduct = new PurchaseProduct(product);
+        purchaseProductRepository.save(purchaseProduct);
         organizationRepository.save(organization);
         userRepository.save(user);
         productRepository.save(product);
         HistoryOrders historyOrders = new HistoryOrders();
         historyOrders.setUser(user);
         historyOrders.setPurchaseAmount(product.getPrice());
-        historyOrders.setProduct(product);
+        historyOrders.setPurchaseProduct(purchaseProduct);
         historyOrdersRepository.save(historyOrders);
         return new ResponseEntity<>(Map.of("message", "Поздравляем с покупкой!"), HttpStatus.OK);
     }
@@ -107,12 +115,13 @@ public class UserService {
         return new ResponseEntity<>(notificationRepository.findAllByUserId(id), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> registerOrganization(Organization organization) {
+    public ResponseEntity<?> registerOrganization(OrganizationConsideration organization) {
         if (organizationRepository.findByName(organization.getName()) != null)
             return new ResponseEntity<>(Map.of("message", "Организация с такими названием зарегистрирована"), HttpStatus.CONFLICT);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organization.setUser(user);
-        organizationRepository.save(organization);
-        return new ResponseEntity<>(HttpStatus.OK);
+        organization.setFrozen(true);
+        organizationConsiderationRepository.save(organization);
+        return new ResponseEntity<>(Map.of("message", "Заявка на рассмотрении"), HttpStatus.OK);
     }
 }

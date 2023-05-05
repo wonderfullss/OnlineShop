@@ -1,10 +1,9 @@
 package com.example.onlineshop.Controller;
 
-import com.example.onlineshop.Entity.Organization;
+import com.example.onlineshop.Entity.OrganizationConsideration;
 import com.example.onlineshop.Entity.Review;
 import com.example.onlineshop.Entity.User;
 import com.example.onlineshop.Service.UserService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/register/organization")
-    public ResponseEntity<?> registerOrganization(@RequestBody Organization organization) {
+    public ResponseEntity<?> registerOrganization(@RequestBody OrganizationConsideration organization) {
         return userService.registerOrganization(organization);
     }
 }
