@@ -15,6 +15,11 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping(value = "/product/all")
+    public ResponseEntity<?> getAllProduct() {
+        return userService.getProduct();
+    }
+
     @PutMapping(value = "/product/review")
     public ResponseEntity<?> addReview(@RequestBody Review review, @RequestParam Long id) {
         return userService.addReview(review, id);
