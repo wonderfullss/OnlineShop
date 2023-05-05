@@ -25,8 +25,6 @@ public class OrganizationConsideration {
 
     private double balance;
 
-    private boolean isFrozen;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;

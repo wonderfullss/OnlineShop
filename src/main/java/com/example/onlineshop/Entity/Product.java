@@ -45,6 +45,9 @@ public class Product {
     private Double grade;
 
     @JsonIgnore
+    private boolean isFrozen;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<Review> reviews;
 
