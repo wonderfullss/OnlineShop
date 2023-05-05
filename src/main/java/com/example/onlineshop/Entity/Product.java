@@ -7,9 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +31,6 @@ public class Product {
     @Min(1)
     private Double price;
 
-    @Column(name = "quantity_in_stock")
     private Integer quantityInStock;
 
     @NotBlank
@@ -44,7 +40,6 @@ public class Product {
     private List<String> keyword;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "characteristic_table")
     private Map<String, String> characteristicTable;
 
     private Double grade;
@@ -52,10 +47,6 @@ public class Product {
     @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<Review> reviews;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
-    private List<HistoryOrders> historyOrders;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
