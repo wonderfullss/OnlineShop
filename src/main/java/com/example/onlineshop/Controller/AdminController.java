@@ -1,5 +1,6 @@
 package com.example.onlineshop.Controller;
 
+import com.example.onlineshop.Entity.Discount;
 import com.example.onlineshop.Entity.Notification;
 import com.example.onlineshop.Service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,16 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+
+    @PutMapping(value = "/admin/discount/organization/{name}")
+    public ResponseEntity<?> discountByOrganization(@PathVariable String name, @RequestBody Discount discount) {
+        return adminService.discountByOrganization(name, discount);
+    }
+
+    @PutMapping(value = "/admin/discount/product/{name}")
+    public ResponseEntity<?> discountByProductName(@PathVariable String name, @RequestBody Discount discount) {
+        return adminService.discountByProductName(name, discount);
+    }
 
     @PostMapping(value = "/admin/validate/organization/{name}")
     public ResponseEntity<?> validateOrganization(@PathVariable String name, @RequestParam String action) {

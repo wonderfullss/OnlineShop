@@ -30,6 +30,8 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/organization/product/add").hasAuthority("USER")
                 .requestMatchers(HttpMethod.POST, "/register/organization").hasAuthority("USER")
                 .requestMatchers(HttpMethod.GET, "/user/myNotifications").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT, "/admin/discount/organization/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/admin/discount/product/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/admin/validate/product/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/admin/validate/organization/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/admin/delete/organization/**").hasAuthority("ADMIN")

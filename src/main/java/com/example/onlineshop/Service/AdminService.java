@@ -147,6 +147,30 @@ public class AdminService {
     }
 
     @Transactional
+    public ResponseEntity<?> discountByProductName(String name, Discount discount) {
+        List<Product> productList = productRepository.finaAllProductByName(name);
+        return discount(productList, discount);
+    }
+
+    @Transactional
+    public ResponseEntity<?> discountByOrganization(String name, Discount discount) {
+        Organization organization = organizationRepository.findByName(name);
+        List<Product> productList = organization.getProduct();
+        return discount(productList, discount);
+    }
+
+    private ResponseEntity<?> discount(List<Product> productList, Discount discount) {
+        double discountPrice;
+        for (Product product : productList) {
+            product.setOldPrice(product.getPrice());
+            discountPrice = product.getPrice() * (discount.getDiscountPrice() / 100.0);
+            product.setPrice(product.getPrice() - discountPrice);
+        }
+        productRepository.saveAll(productList);
+        return new ResponseEntity<>(Map.of("message", "Скидка применена"), HttpStatus.OK);
+    }
+
+    @Transactional
     public ResponseEntity<?> deleteUser(String username) {
         if (userRepository.findUserByUsername(username) == null)
             return new ResponseEntity<>(Map.of("message", "Пользователь не найден"), HttpStatus.NOT_FOUND);
