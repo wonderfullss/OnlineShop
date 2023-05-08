@@ -154,15 +154,13 @@ public class AdminService {
 
     @Transactional
     public ResponseEntity<?> discountByOrganization(String name, Discount discount) {
-        Organization organization = organizationRepository.findByName(name);
-        List<Product> productList = organization.getProduct();
+        List<Product> productList = productRepository.findAllByOrganizationName(name);
         return discount(productList, discount);
     }
 
     private ResponseEntity<?> discount(List<Product> productList, Discount discount) {
         double discountPrice;
         for (Product product : productList) {
-            product.setOldPrice(product.getPrice());
             discountPrice = product.getPrice() * (discount.getDiscountPrice() / 100.0);
             product.setPrice(product.getPrice() - discountPrice);
         }

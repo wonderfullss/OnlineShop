@@ -29,6 +29,7 @@ public class OrganizationService {
         if (!organization.getUser().getId().equals(user.getId())) {
             return new ResponseEntity<>(Map.of("message", "Нет доступа к организации"), HttpStatus.FORBIDDEN);
         }
+        product.setOldPrice(product.getPrice());
         product.setFrozen(true);
         product.setOrganization(organization);
         productRepository.save(product);

@@ -34,7 +34,7 @@ public class Product {
     private Integer quantityInStock;
 
     @JsonIgnore
-    private Double oldPrice;
+    private double oldPrice;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> keyword;

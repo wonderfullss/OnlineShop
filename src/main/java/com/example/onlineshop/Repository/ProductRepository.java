@@ -16,6 +16,8 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     @Query("From Product where isFrozen = false and name = :productName and organization != null")
     List<Product> finaAllProductByName(@Param("productName") String productName);
 
+    List<Product> findAllByOrganizationName(String name);
+
     List<Product> findAllByOrganizationId(Long id);
 
     Product findProductById(Long id);
